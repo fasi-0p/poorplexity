@@ -61,4 +61,26 @@ app.post("/poorplexity_ask", async(req, res)=>{
     res.end()
 })
 
+app.post('/poorplexity_ask/follow_up', async(req, res)=>{
+    // get existing chat from db
+    // forward full history to db
+    // stream response
+})
+
+app.post('/signup', async(req, res)=>{
+
+})
+
+app.post('/signin', async(req, res)=>{
+
+})
+
+app.post('/conversations', async(req, res)=>{
+
+})
+
+app.post('/conversation/:conversationId', async(req, res)=>{
+
+})
+
 app.listen(3000)  
