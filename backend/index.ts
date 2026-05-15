@@ -3,6 +3,8 @@ import {tavily} from "@tavily/core"
 import { streamText, Output } from 'ai'
 import {PROMPT_TEMPLATE, SYSTEM_PROMPT} from './prompt'
 import {z} from 'zod'
+import { prisma } from "./db"
+
 
 
 const app=express()
