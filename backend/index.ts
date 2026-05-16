@@ -4,14 +4,17 @@ import { streamText, Output } from 'ai'
 import {PROMPT_TEMPLATE, SYSTEM_PROMPT} from './prompt'
 import {z} from 'zod'
 import { prisma } from "./db"
+import { middleware } from "./middleware"
+import cors from 'cors'
 
 
 
 const app=express()
 app.use(express.json())
+app.use(cors())
 const client=tavily({apiKey: process.env.TAVILY_API_KEY})
 
-app.post("/poorplexity_ask", async(req, res)=>{
+app.post("/poorplexity_ask",middleware, async(req, res)=>{
     //basic architecture:
 
     //get query from user
@@ -63,7 +66,7 @@ app.post("/poorplexity_ask", async(req, res)=>{
     res.end()
 })
 
-app.post('/poorplexity_ask/follow_up', async(req, res)=>{
+app.post('/poorplexity_ask/follow_up',middleware, async(req, res)=>{
     // get existing chat from db
     // forward full history to db
     // stream response
@@ -77,12 +80,14 @@ app.post('/signin', async(req, res)=>{
 
 })
 
-app.post('/conversations', async(req, res)=>{
+app.get('/conversations',middleware, async(req, res)=>{
+    res.json({
+        userId: req.userId
+    })
+})
+
+app.post('/conversation/:conversationId',middleware, async(req, res)=>{
 
 })
 
-app.post('/conversation/:conversationId', async(req, res)=>{
-
-})
-
-app.listen(3000)  
+app.listen(3001)  

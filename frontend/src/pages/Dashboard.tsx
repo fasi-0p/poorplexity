@@ -2,6 +2,8 @@ import {createClient} from '@supabase/supabase-js'
 import {useEffect, useState} from 'react'
 import type {User} from '@supabase/supabase-js'
 import { useNavigate } from 'react-router'
+import axios from 'axios'
+import {BACKEND_URL} from '../lib/config'
 
 const supabase = createClient('https://ltfeptqhfkdfjivuthul.supabase.co', 'sb_publishable_LPIRFBCiUAfkODTJn8yHuw_yB1n7teP')
 
@@ -18,6 +20,22 @@ export default function Dashboard(){
         }
         getInfo()
     }, [])
+
+    useEffect(()=>{
+        async function getExistingConversations(){
+            if (user){
+                const {data:{session}} = await supabase.auth.getSession()
+                const jwt= session?.access_token
+                const response = await axios.get(`${BACKEND_URL}/conversations`, {
+                    headers:{
+                        Authorization: jwt
+                    }
+                })
+                console.log(response.data)
+            }
+        }
+        getExistingConversations()
+    }, [user])
 
     return (
         <div>
