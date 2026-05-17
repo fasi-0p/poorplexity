@@ -32,7 +32,7 @@ export function Sidebar({ user, conversations, onNewThread, onSelectConversation
             <span>New Thread</span>
             <div className="flex items-center gap-1 opacity-50">
               <span className="text-xs border border-gray-600 rounded px-1.5 py-0.5">Ctrl</span>
-              <span className="text-xs border border-gray-600 rounded px-1.5 py-0.5">I</span>
+              <span className="text-xs border border-gray-600 rounded px-1.5 py-0.5">O</span>
             </div>
           </button>
         </div>

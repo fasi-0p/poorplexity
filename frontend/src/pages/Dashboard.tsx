@@ -11,6 +11,46 @@ import remarkGfm from 'remark-gfm'
 
 const supabase = createClient('https://ltfeptqhfkdfjivuthul.supabase.co', 'sb_publishable_LPIRFBCiUAfkODTJn8yHuw_yB1n7teP')
 
+const parseMessage = (content: string) => {
+    if (!content) return { answer: '', followUps: [] };
+    let answer = content;
+    let followUps: string[] = [];
+
+    const answerMatch = content.match(/<ANSWER>([\s\S]*?)<\/ANSWER>/i);
+    if (answerMatch) {
+        answer = answerMatch[1].trim();
+    } else {
+        const openAnswerMatch = content.match(/<ANSWER>([\s\S]*)/i);
+        if (openAnswerMatch) {
+            answer = openAnswerMatch[1].trim();
+        }
+    }
+
+    const followUpsMatch = content.match(/<FOLLOW_UPS>([\s\S]*?)<\/FOLLOW_UPS>/i);
+    let followUpsString = "";
+    if (followUpsMatch) {
+        followUpsString = followUpsMatch[1];
+    } else {
+        const openFollowUpsMatch = content.match(/<FOLLOW_UPS>([\s\S]*)/i);
+        if (openFollowUpsMatch) {
+            followUpsString = openFollowUpsMatch[1];
+        }
+    }
+
+    if (followUpsString) {
+        const questionRegex = /<question>([\s\S]*?)<\/question>/gi;
+        let match;
+        while ((match = questionRegex.exec(followUpsString)) !== null) {
+            followUps.push(match[1].trim());
+        }
+    }
+
+    // Clean up `<ANSWER>` tag from output if the LLM didn't format properly
+    answer = answer.replace(/<\/?ANSWER>/gi, '').trim();
+
+    return { answer, followUps };
+};
+
 export default function Dashboard() {
     const navigate = useNavigate()
     const [user, setUser] = useState<User | null>(null)
@@ -28,6 +68,17 @@ export default function Dashboard() {
     useEffect(() => {
         scrollToBottom()
     }, [messages, isLoading])
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
+                e.preventDefault();
+                handleNewThread();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     useEffect(() => {
         async function getInfo() {
@@ -77,18 +128,18 @@ export default function Dashboard() {
         }
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!query.trim() || isLoading) return
-        
-        const userQuery = query
+    const handleSubmit = async (e?: React.FormEvent, overrideQuery?: string) => {
+        if (e) e.preventDefault()
+        const userQuery = overrideQuery || query
+        if (!userQuery.trim() || isLoading) return
+
         setQuery('')
         setIsLoading(true)
-        
+
         // Optimistically add user message
         const newMessages = [...messages, { role: 'USER', content: userQuery }]
         setMessages(newMessages)
-        
+
         // Add a placeholder assistant message
         setMessages([...newMessages, { role: 'ASSISTANT', content: '', sources: [] }])
 
@@ -124,10 +175,10 @@ export default function Dashboard() {
                 if (done) break
 
                 const chunk = decoder.decode(value, { stream: true })
-                
+
                 // Extremely basic parsing for <SOURCES> and <CONVERSATION_ID> tags which come at the end
                 const parts = chunk.split(/(<SOURCES>|<\/SOURCES>|<CONVERSATION_ID>|<\/CONVERSATION_ID>)/)
-                
+
                 for (let i = 0; i < parts.length; i++) {
                     const p = parts[i]
                     if (p === "<SOURCES>") {
@@ -141,7 +192,7 @@ export default function Dashboard() {
                                 const last = prev[prev.length - 1]
                                 return [...prev.slice(0, -1), { ...last, sources: sourcesData }]
                             })
-                        } catch (e) {}
+                        } catch (e) { }
                         continue
                     } else if (p === "<CONVERSATION_ID>") {
                         isParsingConvId = true
@@ -188,10 +239,10 @@ export default function Dashboard() {
 
     return (
         <div className="flex h-screen bg-[#191A1A] text-white font-sans overflow-hidden">
-            <Sidebar 
-                user={user} 
-                conversations={conversations} 
-                onNewThread={handleNewThread} 
+            <Sidebar
+                user={user}
+                conversations={conversations}
+                onNewThread={handleNewThread}
                 onSelectConversation={fetchConversation}
                 onLogout={handleLogout}
                 currentChatId={currentChatId}
@@ -212,7 +263,7 @@ export default function Dashboard() {
                         // Homepage Search State
                         <div className="h-full flex flex-col items-center justify-center max-w-3xl mx-auto w-full px-4">
                             <h1 className="text-3xl md:text-4xl font-normal mb-8 text-center text-[rgba(255,255,255,0.9)]">What do you want to know?</h1>
-                            
+
                             <form onSubmit={handleSubmit} className="w-full relative">
                                 <div className="bg-[#202222] border border-[#2d2f2f] rounded-[24px] focus-within:border-gray-500 focus-within:ring-1 focus-within:ring-gray-500 transition-all flex flex-col min-h-[140px] shadow-lg">
                                     <textarea
@@ -239,8 +290,8 @@ export default function Dashboard() {
                                                 <span className="hidden sm:inline">Attach</span>
                                             </button>
                                         </div>
-                                        <button 
-                                            type="submit" 
+                                        <button
+                                            type="submit"
                                             disabled={!query.trim() || isLoading}
                                             className="bg-white text-black p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:hover:bg-white transition-colors"
                                         >
@@ -249,7 +300,7 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                             </form>
-                            
+
                             <div className="mt-6 flex flex-wrap gap-2 justify-center text-sm text-gray-400">
                                 <span className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#2d2f2f] bg-[#202222] hover:bg-[#2d2f2f] cursor-pointer transition-colors"><Search size={14} /> Who is the CEO of Google?</span>
                                 <span className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#2d2f2f] bg-[#202222] hover:bg-[#2d2f2f] cursor-pointer transition-colors"><Search size={14} /> Rust vs Go performance</span>
@@ -275,10 +326,10 @@ export default function Dashboard() {
                                                     </div>
                                                     <div className="flex overflow-x-auto pb-4 gap-2 no-scrollbar">
                                                         {msg.sources.map((src: any, sIdx: number) => (
-                                                            <a 
-                                                                key={sIdx} 
-                                                                href={src.url} 
-                                                                target="_blank" 
+                                                            <a
+                                                                key={sIdx}
+                                                                href={src.url}
+                                                                target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="flex flex-col gap-1 min-w-[160px] max-w-[200px] p-3 rounded-xl bg-[#202222] hover:bg-[#2d2f2f] border border-[#2d2f2f] transition-colors shrink-0"
                                                             >
@@ -289,7 +340,7 @@ export default function Dashboard() {
                                                     </div>
                                                 </div>
                                             )}
-                                            
+
                                             {/* AI Answer */}
                                             <div>
                                                 <div className="flex items-center gap-2 mb-3 text-[rgba(255,255,255,0.9)] font-medium">
@@ -300,9 +351,32 @@ export default function Dashboard() {
                                                 </div>
                                                 <div className="prose prose-invert max-w-none text-gray-300 prose-p:leading-relaxed prose-pre:bg-[#202222] prose-pre:border prose-pre:border-[#2d2f2f] marker:text-gray-500">
                                                     {msg.content ? (
-                                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                                            {msg.content}
-                                                        </ReactMarkdown>
+                                                        <>
+                                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                                {parseMessage(msg.content).answer}
+                                                            </ReactMarkdown>
+
+                                                            {parseMessage(msg.content).followUps.length > 0 && (
+                                                                <div className="mt-8 border-t border-[#2d2f2f] pt-6 not-prose">
+                                                                    <div className="flex items-center gap-2 mb-4 text-gray-400 font-medium">
+                                                                        <Search size={18} />
+                                                                        <h3>Related</h3>
+                                                                    </div>
+                                                                    <div className="flex flex-col gap-2">
+                                                                        {parseMessage(msg.content).followUps.map((fu, i) => (
+                                                                            <button
+                                                                                key={i}
+                                                                                onClick={() => handleSubmit(undefined, fu)}
+                                                                                className="text-left text-[15px] px-4 py-3 rounded-xl bg-[#202222] border border-[#2d2f2f] hover:bg-[#2d2f2f] text-gray-300 hover:text-white transition-colors flex items-center justify-between"
+                                                                            >
+                                                                                <span className="line-clamp-1">{fu}</span>
+                                                                                <ArrowRight size={16} className="opacity-50" />
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </>
                                                     ) : (
                                                         <div className="animate-pulse flex space-x-2 items-center h-6">
                                                             <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
@@ -334,8 +408,8 @@ export default function Dashboard() {
                                         className="w-full bg-transparent border-none outline-none px-4 py-3.5 text-[15px] text-white placeholder-gray-500 flex-1"
                                         disabled={isLoading}
                                     />
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         disabled={!query.trim() || isLoading}
                                         className="bg-white text-black p-1.5 mr-1 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:hover:bg-white transition-colors"
                                     >

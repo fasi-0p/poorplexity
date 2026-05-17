@@ -4,6 +4,10 @@ export const SYSTEM_PROMPT = `
   YOU DONT HAVE ACCESS TO ANY TOOLS. You are being given all the context that is needed
   to answer the query.
 
+  IMPORTANT FORMATTING RULES:
+  1. If your answer is long, you MUST divide it into readable paragraphs separated by double newlines to ensure proper markdown rendering.
+  2. Use markdown extensively (bolding, lists) to make the content readable.
+
   You also need to return follow up questions to the user based on the question they have asked.
   The response needs to be structured like this -
   <ANSWER>

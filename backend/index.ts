@@ -67,6 +67,10 @@ app.post("/poorplexity_ask", middleware, async (req: AuthenticatedRequest, res: 
     res.header('Cache-control', 'no-cache')
     res.header('Content-Type', 'text/event-stream')
 
+    res.write("<SOURCES>")
+    res.write(JSON.stringify(webSearchResult))
+    res.write("</SOURCES>")
+
     let assistantMessage = "";
 
     for await (const textPart of result.textStream) {
@@ -74,10 +78,6 @@ app.post("/poorplexity_ask", middleware, async (req: AuthenticatedRequest, res: 
         assistantMessage += textPart;
         //todo pass it to frontend
     }
-
-    res.write("\n <SOURCES> \n")
-    res.write(JSON.stringify(webSearchResult))
-    res.write("\n </SOURCES> \n")
 
     res.write(`\n <CONVERSATION_ID>${conversation.id}</CONVERSATION_ID> \n`)
 
@@ -140,16 +140,16 @@ app.post('/poorplexity_ask/follow_up', middleware, async (req: AuthenticatedRequ
     res.header('Cache-control', 'no-cache')
     res.header('Content-Type', 'text/event-stream')
 
+    res.write("<SOURCES>")
+    res.write(JSON.stringify(webSearchResult))
+    res.write("</SOURCES>")
+
     let assistantMessage = "";
 
     for await (const textPart of result.textStream) {
         res.write(textPart)
         assistantMessage += textPart;
     }
-
-    res.write("\n <SOURCES> \n")
-    res.write(JSON.stringify(webSearchResult))
-    res.write("\n </SOURCES> \n")
 
     res.end()
 
