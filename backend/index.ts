@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { prisma } from "./db"
 import { middleware } from "./middleware"
 import cors from 'cors'
+import { groq } from '@ai-sdk/groq'
 
 // Extend Request type locally
 export interface AuthenticatedRequest extends Request {
@@ -55,7 +56,7 @@ app.post("/poorplexity_ask", middleware, async (req: AuthenticatedRequest, res: 
 
     //hit llm and stream reponse
     const result = streamText({
-        model: 'openai/gpt-5.5',
+        model: groq('llama-3.3-70b-versatile'),
         prompt: prompt,
         system: SYSTEM_PROMPT,
     })
@@ -131,7 +132,7 @@ app.post('/poorplexity_ask/follow_up', middleware, async (req: AuthenticatedRequ
 
     // stream response
     const result = streamText({
-        model: 'openai/gpt-5.5',
+        model: groq('llama-3.3-70b-versatile'),
         prompt: fullPrompt,
         system: SYSTEM_PROMPT,
     });

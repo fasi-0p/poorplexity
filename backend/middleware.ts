@@ -11,17 +11,19 @@ export async function middleware(req: Request,res: Response, next: NextFunction)
     const userId = data.data.user?.id
     if (userId){
         try{
-            await prisma.user.create({
-                data:{
+            await prisma.user.upsert({
+                where: { id: data.data.user!.id },
+                update: {},
+                create: {
                     id: data.data.user!.id,
                     supabaseId: data.data.user!.id,
                     email: data.data.user?.email!,
                     provider: data.data.user?.app_metadata.provider==='google'? 'GOOGLE':'GITHUB',
-                    name: data.data.user?.user_metadata.full_name
+                    name: data.data.user?.user_metadata.full_name || ''
                 }
             })
         }catch(e){
-            console.log(e)
+            console.error("Error upserting user in middleware:", e)
         }
         req.userId=userId
         next()
