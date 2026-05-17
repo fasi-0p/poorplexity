@@ -21,11 +21,15 @@
 
 ## 🎬 Demo
 
-### Product Demo
+### 📸 Product Screenshot
 
 ![Demo Screenshot](./assets/demo.png)
 
 ---
+
+### 🎥 Full Product Walkthrough
+
+👉 [Watch Demo Video](./assets/demoVid.mp4)
 
 ### Live Streaming AI Experience
 
