@@ -174,8 +174,8 @@ export type ConversationWhereInput = {
   title?: Prisma.StringNullableFilter<"Conversation"> | string | null
   slug?: Prisma.StringFilter<"Conversation"> | string
   userId?: Prisma.StringFilter<"Conversation"> | string
-  messages?: Prisma.MessageListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  messages?: Prisma.MessageListRelationFilter
 }
 
 export type ConversationOrderByWithRelationInput = {
@@ -183,8 +183,8 @@ export type ConversationOrderByWithRelationInput = {
   title?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  messages?: Prisma.MessageOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
+  messages?: Prisma.MessageOrderByRelationAggregateInput
 }
 
 export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -195,8 +195,8 @@ export type ConversationWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ConversationWhereInput | Prisma.ConversationWhereInput[]
   title?: Prisma.StringNullableFilter<"Conversation"> | string | null
   userId?: Prisma.StringFilter<"Conversation"> | string
-  messages?: Prisma.MessageListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  messages?: Prisma.MessageListRelationFilter
 }, "id" | "slug">
 
 export type ConversationOrderByWithAggregationInput = {
@@ -223,8 +223,8 @@ export type ConversationCreateInput = {
   id?: string
   title?: string | null
   slug: string
-  messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
   user: Prisma.UserCreateNestedOneWithoutConversationsInput
+  messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateInput = {
@@ -239,8 +239,8 @@ export type ConversationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutConversationsNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateInput = {
@@ -523,8 +523,8 @@ export type ConversationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   title?: boolean
   slug?: boolean
   userId?: boolean
-  messages?: boolean | Prisma.Conversation$messagesArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  messages?: boolean | Prisma.Conversation$messagesArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["conversation"]>
 
@@ -553,8 +553,8 @@ export type ConversationSelectScalar = {
 
 export type ConversationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "userId", ExtArgs["result"]["conversation"]>
 export type ConversationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  messages?: boolean | Prisma.Conversation$messagesArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  messages?: boolean | Prisma.Conversation$messagesArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ConversationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -567,8 +567,8 @@ export type ConversationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types
 export type $ConversationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Conversation"
   objects: {
-    messages: Prisma.$MessagePayload<ExtArgs>[]
     user: Prisma.$UserPayload<ExtArgs>
+    messages: Prisma.$MessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -969,8 +969,8 @@ readonly fields: ConversationFieldRefs;
  */
 export interface Prisma__ConversationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  messages<T extends Prisma.Conversation$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  messages<T extends Prisma.Conversation$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

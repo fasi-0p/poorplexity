@@ -27,8 +27,8 @@ const config: runtime.GetPrismaClientConfig = {
       "fromEnvVar": null
     },
     "config": {
-      "runtime": "bun",
-      "engineType": "client"
+      "engineType": "client",
+      "runtime": "bun"
     },
     "binaryTargets": [
       {
@@ -57,8 +57,8 @@ const config: runtime.GetPrismaClientConfig = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider   = \"prisma-client\"\n  output     = \"./generated\"\n  engineType = \"client\"\n  runtime    = \"bun\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String         @id @default(uuid())\n  email         String         @unique\n  provider      AuthProvider\n  name          String\n  conversations Conversation[]\n}\n\nenum AuthProvider {\n  GITHUB\n  GOOGLE\n}\n\nmodel Conversation {\n  id       String    @id @default(uuid())\n  title    String?\n  slug     String    @unique\n  userId   String\n  messages Message[]\n  user     User      @relation(fields: [userId], references: [id])\n}\n\nmodel Message {\n  id             String       @id @default(uuid())\n  content        String\n  role           MessageRole\n  conversationId String\n  conversation   Conversation @relation(fields: [conversationId], references: [id])\n  createdAt      DateTime     @default(now())\n}\n\nenum MessageRole {\n  USER\n  ASSISTANT\n}\n",
-  "inlineSchemaHash": "2e2b3a3ab6ac239df93b0e9c89320ae35c39c290a109277319e820cb72e2d566",
+  "inlineSchema": "generator client {\n  provider   = \"prisma-client\"\n  output     = \"./generated\"\n  engineType = \"client\"\n  runtime    = \"bun\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String         @id @default(uuid())\n  email         String         @unique\n  provider      AuthProvider\n  name          String\n  supabaseId    String\n  conversations Conversation[]\n}\n\nmodel Conversation {\n  id       String    @id @default(uuid())\n  title    String?\n  slug     String    @unique\n  userId   String\n  user     User      @relation(fields: [userId], references: [id])\n  messages Message[]\n}\n\nmodel Message {\n  id             String       @id @default(uuid())\n  content        String\n  role           MessageRole\n  conversationId String\n  createdAt      DateTime     @default(now())\n  conversation   Conversation @relation(fields: [conversationId], references: [id])\n}\n\nenum AuthProvider {\n  GITHUB\n  GOOGLE\n}\n\nenum MessageRole {\n  USER\n  ASSISTANT\n}\n",
+  "inlineSchemaHash": "09becb4a22952f5e096523e0457f2369f0d54e22801d91401b04d9dcf63181b0",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},
@@ -68,7 +68,7 @@ const config: runtime.GetPrismaClientConfig = {
   "dirname": ""
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"enum\",\"type\":\"AuthProvider\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"conversations\",\"kind\":\"object\",\"type\":\"Conversation\",\"relationName\":\"ConversationToUser\"}],\"dbName\":null},\"Conversation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"slug\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"messages\",\"kind\":\"object\",\"type\":\"Message\",\"relationName\":\"ConversationToMessage\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ConversationToUser\"}],\"dbName\":null},\"Message\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"MessageRole\"},{\"name\":\"conversationId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"conversation\",\"kind\":\"object\",\"type\":\"Conversation\",\"relationName\":\"ConversationToMessage\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"enum\",\"type\":\"AuthProvider\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"supabaseId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"conversations\",\"kind\":\"object\",\"type\":\"Conversation\",\"relationName\":\"ConversationToUser\"}],\"dbName\":null},\"Conversation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"slug\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ConversationToUser\"},{\"name\":\"messages\",\"kind\":\"object\",\"type\":\"Message\",\"relationName\":\"ConversationToMessage\"}],\"dbName\":null},\"Message\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"MessageRole\"},{\"name\":\"conversationId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"conversation\",\"kind\":\"object\",\"type\":\"Conversation\",\"relationName\":\"ConversationToMessage\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 config.engineWasm = undefined
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
